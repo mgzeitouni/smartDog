@@ -24,6 +24,7 @@ export class HomePage {
   discovered:boolean=false;
   connected:boolean=false;
   peripheral;
+  connectedPeripheral;
 
   constructor(public navCtrl: NavController, 
               private toastCtrl: ToastController,
@@ -52,6 +53,7 @@ export class HomePage {
      // this.setStatus('');
      this.connected=true;
       this.peripheral = peripheral;
+      console.log(JSON.stringify(this.peripheral))
     });
   }
   onDeviceDisconnected(peripheral) {
@@ -77,10 +79,11 @@ export class HomePage {
 
       peripheral => this.onConnected(peripheral),
       peripheral => this.onDeviceDisconnected(peripheral)
+    
     );
 
     this.connected=true;
-  
+
   }
 
 
