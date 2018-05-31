@@ -1,17 +1,68 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>Home</ion-title>
-  </ion-navbar>
-</ion-header>
+    <ion-navbar>
+      <ion-title>
+        BLE Connect
+      </ion-title>
+      <ion-buttons end>
+        <button ion-button (click)="scan()">
+          Scan
+        </button>
+      </ion-buttons>
+    </ion-navbar>
+  </ion-header>
 
-<ion-content padding>
-  <h2>Welcome to Ionic!</h2>
-  <p>
-    This starter project comes with simple tabs-based layout for apps
-    that are going to primarily use a Tabbed UI.
-  </p>
-  <p>
-    Take a look at the <code>src/pages/</code> directory to add or change tabs,
-    update any existing page or create new pages.
-  </p>
+  <ion-content>
+
+
+
+    <ion-grid style="height: 100%">
+        <ion-card >
+        <ion-row >
+         
+          <ion-item *ngIf="!discovered"><h1>Searching for device...</h1></ion-item>
+          <ion-item *ngIf="discovered && !connected"><h1>Device found!</h1></ion-item>
+          <ion-item *ngIf="connected"><h1>Device connected!</h1></ion-item>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+          <button ion-button large round color="secondary" (click)="connectDevice()" >Connect</button>
+        </ion-col>
+        <ion-col>
+            <button ion-button large round color="danger" (click)="onDeviceDisconnected(peripheral)" >Disconnect</button>
+          </ion-col>
+       
+      </ion-row>
+  
+    </ion-card >
+        <ion-row>
+         <ion-card *ngIf="connected">
+           <ion-card-header>
+           Change blinking frequency...
+          </ion-card-header>
+
+          <ion-card-content>
+              <ion-item >
+                  <ion-range min="0" max="30" [(ngModel)]="newBlinkSpeed" color="secondary" (ionChange)="rangeChange()">
+                      <ion-label range-left>0 Hz</ion-label>
+                      <ion-label range-right>5 Hz</ion-label>
+                    </ion-range>
+                </ion-item>
+      
+          </ion-card-content>
+           </ion-card>
+        </ion-row>
+
+      </ion-grid>
+
 </ion-content>
+  
+  <!-- <ion-content>
+     <ion-list> 
+      <button ion-item *ngFor="let device of devices" (click)="deviceSelected(device)">
+        <h2>{{ device.name || 'Unnamed' }}</h2>
+        <p>{{ device.id }}</p>
+        <p>RSSI: {{ device.rssi }}</p>
+      </button>  
+     </ion-list> 
+  </ion-content> -->
+  
