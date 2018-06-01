@@ -15,13 +15,13 @@
 
 
 
-    <ion-grid style="height: 100%">
+
         <ion-card >
         <ion-row >
          
-          <ion-item *ngIf="!discovered"><h1>Searching for device...</h1></ion-item>
-          <ion-item *ngIf="discovered && !connected"><h1>Device found!</h1></ion-item>
-          <ion-item *ngIf="connected"><h1>Device connected!</h1></ion-item>
+          <ion-item *ngIf="!discovered"><h1>Searching for litter box...</h1></ion-item>
+          <ion-item *ngIf="discovered && !connected"><h1>Litter Box found!</h1></ion-item>
+          <ion-item *ngIf="connected"><h1>Litter Box connected!</h1></ion-item>
         </ion-row>
         <ion-row>
           <ion-col>
@@ -34,7 +34,7 @@
       </ion-row>
   
     </ion-card >
-        <ion-row>
+       <!-- <ion-row>
          <ion-card *ngIf="connected">
            <ion-card-header>
            Change blinking frequency...
@@ -50,20 +50,34 @@
       
           </ion-card-content>
            </ion-card>
-        </ion-row>
-        <ion-row>
-          <ion-card>
+        </ion-row>-->
+     
+       
+      <ion-item no-lines text-center class="circle" *ngIf="connected">
+        <br><br>
+          <h1 style="font-size:40px;">Weight:</h1>
+          <br><br>
+          <h1 *ngIf="weight>0" style="font-size:60px;"> {{weight | number:'0.2-2'}}</h1>
+          <br>
+          <h2 *ngIf="weight>0" style="font-size:40px;">lbs</h2>
+        </ion-item>
+
+
+
+        <!-- <ion-row>
+          <ion-card *ngIf="connected">
             <ion-card-header>
-              Peripheral:
+              Weight:
             </ion-card-header>
             <ion-card-content>
-                {{connectedPeriperal | json}} 
+              
+                <h1>{{weight | number:'0.2-2'}} lbs</h1>
             </ion-card-content>
         
           </ion-card>
-        </ion-row>
+        </ion-row> -->
 
-      </ion-grid>
+      
 
 </ion-content>
   

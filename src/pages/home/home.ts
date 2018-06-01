@@ -1,7 +1,7 @@
 import { Component, NgZone } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
 import { BLE } from '@ionic-native/ble';
-
+import { ChangeDetectorRef } from '@angular/core';
 /**
  * Generated class for the HomePage page.
  *
@@ -24,17 +24,22 @@ export class HomePage {
   discovered:boolean=false;
   connected:boolean=false;
   peripheral;
-  connectedPeripheral;
+  weight=0;
 
   constructor(public navCtrl: NavController, 
               private toastCtrl: ToastController,
               private ble: BLE,
-              private ngZone: NgZone) { 
+              private ngZone: NgZone,
+              private cd: ChangeDetectorRef) { 
   }
 
   ionViewDidEnter() {
     console.log('ionViewDidEnter');
     this.scan();
+  }
+
+  ionViewWillLeave(){
+    this.onDeviceDisconnected(this.peripheral);
   }
 
   scan() {
@@ -49,12 +54,23 @@ export class HomePage {
   }
 
   onConnected(peripheral) {
-    this.ngZone.run(() => {
+
      // this.setStatus('');
      this.connected=true;
       this.peripheral = peripheral;
-      console.log(JSON.stringify(this.peripheral))
-    });
+    
+      this.ble.startNotification(this.peripheral.id, this.peripheral.services[0],this.peripheral.characteristics[0].characteristic)
+    .subscribe(buf=>{
+      //let data = this.bytesToString(new Uint8Array(buf));
+      let json=JSON.parse(JSON.stringify(new Uint8Array(buf)))
+      let arr =Object.values(json)
+    
+      this.weight =  new Float32Array(new Uint8Array(arr).buffer)[0];
+      console.log(this.weight)
+      this.cd.detectChanges();
+
+      })
+   
   }
   onDeviceDisconnected(peripheral) {
     this.ble.disconnect(this.peripheral.id).then(
@@ -64,11 +80,33 @@ export class HomePage {
     this.connected=false;
   }
 
+  readData(){
+    console.log('requested dataaaaaa');
+    let that=this;
+    this.ble.startNotification(this.peripheral.id, this.peripheral.services[0],this.peripheral.characteristics[0].characteristic)
+    .subscribe(buf=>{
+      //let data = this.bytesToString(new Uint8Array(buf));
+      let json=JSON.parse(JSON.stringify(new Uint8Array(buf)))
+      let arr =Object.values(json)
+    
+      that.weight =  new Float32Array(new Uint8Array(arr).buffer)[0];
+      console.log(that.weight)
+
+
+      })
+
+  }
+
+
+  bytesToString(buffer) {
+    return String.fromCharCode.apply(null, new Uint8Array(buffer));
+  }
 
 
   onDeviceDiscovered(device) {
     console.log('Discovered ' + JSON.stringify(device, null, 2));
-    if (device.name && device.name.indexOf('Kitty')>-1){
+    if (device.name !==undefined && device.name.toString().indexOf("Kitty")>-1){
+    console.log("--------------------------FOUND-------------------") 
       this.device = device;
       this.discovered = true;
     }
