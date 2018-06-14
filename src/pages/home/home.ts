@@ -1,7 +1,8 @@
-import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
+import { Component } from '@angular/core';
+import { IonicPage, NavController } from 'ionic-angular';
 import { BLE } from '@ionic-native/ble';
 import { ChangeDetectorRef } from '@angular/core';
+import { ScaleDataProvider } from '../../providers/scale-data/scale-data';
 /**
  * Generated class for the HomePage page.
  *
@@ -27,19 +28,15 @@ export class HomePage {
   weight=0;
 
   constructor(public navCtrl: NavController, 
-              private toastCtrl: ToastController,
+            
               private ble: BLE,
-              private ngZone: NgZone,
-              private cd: ChangeDetectorRef) { 
+              private cd: ChangeDetectorRef,
+              private scaleDataProvider: ScaleDataProvider) { 
   }
 
   ionViewDidEnter() {
     console.log('ionViewDidEnter');
     this.scan();
-  }
-
-  ionViewWillLeave(){
-    this.onDeviceDisconnected(this.peripheral);
   }
 
   scan() {
@@ -58,26 +55,46 @@ export class HomePage {
      // this.setStatus('');
      this.connected=true;
       this.peripheral = peripheral;
+
+      this.scaleDataProvider.weight_values=[];
+
+      var that = this;
+
+      var serviceToUse = "AFC672E8-6CA4-4252-BE86-B6F20E3F7467";
+     
+      var chartoUse = "8204321F-D4bE-4556-9537-2EADB108D28E"
     
-      this.ble.startNotification(this.peripheral.id, this.peripheral.services[0],this.peripheral.characteristics[0].characteristic)
+      this.ble.startNotification(this.peripheral.id, serviceToUse,chartoUse)
     .subscribe(buf=>{
       //let data = this.bytesToString(new Uint8Array(buf));
       let json=JSON.parse(JSON.stringify(new Uint8Array(buf)))
       let arr =Object.values(json)
     
-      this.weight =  new Float32Array(new Uint8Array(arr).buffer)[0];
-      console.log(this.weight)
-      this.cd.detectChanges();
+      that.weight =  new Float32Array(new Uint8Array(arr).buffer)[0];
+
+      that.scaleDataProvider.newWeight(that.weight);
+
+     // console.log(that.weight)
+     // console.log(this.weight)
+      that.cd.detectChanges();
 
       })
    
   }
   onDeviceDisconnected(peripheral) {
+
+    this.scaleDataProvider.catDetected=false;
+    this.scaleDataProvider.urineDetected=false;
+    this.scaleDataProvider.scoopDetected=false;
+
+
     this.ble.disconnect(this.peripheral.id).then(
       () => console.log('Disconnected ' + JSON.stringify(this.peripheral)),
       () => console.log('ERROR disconnecting ' + JSON.stringify(this.peripheral))
     )
     this.connected=false;
+
+
   }
 
   readData(){
@@ -90,7 +107,7 @@ export class HomePage {
       let arr =Object.values(json)
     
       that.weight =  new Float32Array(new Uint8Array(arr).buffer)[0];
-      console.log(that.weight)
+      //console.log(that.weight)
 
 
       })
@@ -109,10 +126,12 @@ export class HomePage {
     console.log("--------------------------FOUND-------------------") 
       this.device = device;
       this.discovered = true;
+      this.cd.detectChanges();
     }
   }
 
   connectDevice(){
+    this.weight=0;
     this.ble.connect(this.device.id).subscribe(
 
       peripheral => this.onConnected(peripheral),
@@ -155,6 +174,20 @@ console.log(sendBLE)
       });
 
   }
+
+  tare(){
+    var value = this.str2ab("1")
+
+    var serviceToUse = "AFC672E8-6CA4-4252-BE86-B6F20E3F7467";
+    var charToUse = "1448ef56-f2dc-4593-9f17-32cd59fb7774";
+
+    this.ble.write(this.peripheral.id,serviceToUse, charToUse,value).then(
+      result=> {
+      }).catch(error=> {
+          alert(JSON.stringify(error));
+      });
+  }
+
 
 
   // If location permission is denied, you'll end up here

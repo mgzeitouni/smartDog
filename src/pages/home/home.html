@@ -1,8 +1,15 @@
 <ion-header>
-    <ion-navbar>
-      <ion-title>
-        BLE Connect
+    <ion-navbar text-center>
+      <ion-title >
+        Connected Litter Box
       </ion-title>
+
+      <ion-buttons start *ngIf="!connected">
+          <button ion-button color="dark" icon-only item-left  (click)="navCtrl.push('ConfigPage')">
+            <ion-icon name="cog"></ion-icon>
+          </button>
+        </ion-buttons>
+
       <ion-buttons end>
         <button ion-button (click)="scan()">
           Scan
@@ -12,8 +19,6 @@
   </ion-header>
 
   <ion-content>
-
-
 
 
         <ion-card >
@@ -34,60 +39,119 @@
       </ion-row>
   
     </ion-card >
-       <!-- <ion-row>
-         <ion-card *ngIf="connected">
-           <ion-card-header>
-           Change blinking frequency...
-          </ion-card-header>
 
-          <ion-card-content>
-              <ion-item >
-                  <ion-range min="0" max="30" [(ngModel)]="newBlinkSpeed" color="secondary" (ionChange)="rangeChange()">
-                      <ion-label range-left>0 Hz</ion-label>
-                      <ion-label range-right>5 Hz</ion-label>
-                    </ion-range>
-                </ion-item>
-      
-          </ion-card-content>
-           </ion-card>
-        </ion-row>-->
      
-       
-      <ion-item no-lines text-center class="circle" *ngIf="connected">
+<!--        
+      <ion-item no-lines text-center class="circle" *ngIf="scaleDataProvider.urineDetected" [ngStyle]="{ 'background-color': scaleDataProvider.urineDetected? 'red': 'green' }">
         <br><br>
-          <h1 style="font-size:40px;">Weight:</h1>
+
+        <div> 
           <br><br>
-          <h1 *ngIf="weight>0" style="font-size:60px;"> {{weight | number:'0.2-2'}}</h1>
-          <br>
-          <h2 *ngIf="weight>0" style="font-size:40px;">lbs</h2>
-        </ion-item>
-
-
-
-        <!-- <ion-row>
-          <ion-card *ngIf="connected">
-            <ion-card-header>
-              Weight:
-            </ion-card-header>
-            <ion-card-content>
-              
-                <h1>{{weight | number:'0.2-2'}} lbs</h1>
-            </ion-card-content>
+          <h1 style="font-size:40px;">Urine Detected:</h1>
         
-          </ion-card>
-        </ion-row> -->
+        </div>
 
+        </ion-item> -->
+        <br><br><br>
+<!-- 
+        <p>Urine: {{scaleDataProvider.urineDetected}}</p> -->
+
+        <ion-grid>
+          <ion-row align-items-center>
+            <ion-col>
+
+                <ion-item text-center no-lines *ngIf="scaleDataProvider.catDetected">
+                    <ion-row align-items-center justify-content-center>
+                    
+                          <img style="width: 80px; " src="assets/imgs/cat-icon.png">
+                  
+                      </ion-row>
+                      <br>
+                      <ion-row align-items-center justify-content-center>
+               
+                            <h1 style="font-size:38px;"><strong>Cat climbed in,<br> she's ready to go!</strong></h1>
+                      </ion-row>
+
+                  </ion-item>
+
+
+        
+                <ion-item text-center no-lines *ngIf="scaleDataProvider.urineDetected">
+                    <ion-row align-items-center justify-content-center>
+                    
+                          <img style="width: 80px; " src="assets/imgs/urine.png">
+                  
+                      </ion-row>
+                      <br>
+                      <ion-row align-items-center justify-content-center>
+               
+                            <h1 style="font-size:45px;"><strong>Urine detected, <br> Time to Scoop!</strong></h1>
+                      </ion-row>
+
+                  </ion-item>
+
+                  <ion-item text-center no-lines *ngIf="scaleDataProvider.scoopDetected">
+                      <ion-row align-items-center justify-content-center>
+                      
+                            <img style="width: 80px; " src="assets/imgs/scooper.png">
+                    
+                        </ion-row>
+                        <br>
+                        <ion-row align-items-center justify-content-center>
+                 
+                              <h1 style="font-size:45px;"><strong>You scooped! <br>Good job</strong></h1>
+                        </ion-row>
+  
+                    </ion-item>
+
+
+    
+                  
+                  </ion-col>
+          </ion-row>
+        </ion-grid>
+
+
+        <br><br>
       
 
 </ion-content>
-  
-  <!-- <ion-content>
-     <ion-list> 
-      <button ion-item *ngFor="let device of devices" (click)="deviceSelected(device)">
-        <h2>{{ device.name || 'Unnamed' }}</h2>
-        <p>{{ device.id }}</p>
-        <p>RSSI: {{ device.rssi }}</p>
-      </button>  
-     </ion-list> 
-  </ion-content> -->
-  
+
+<ion-footer  *ngIf="connected">
+
+    <ion-toolbar>
+              
+        <ion-item no-lines >
+          <ion-grid>
+            <ion-row align-items-center>
+              <ion-col>
+                  <button ion-button large round (click)="tare()">Tare scale</button>
+              </ion-col>
+              <ion-col>
+                  Weight reading: {{weight | number: '0.1-1'}}
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+            
+            
+          </ion-item>
+         
+      </ion-toolbar>
+<!--       
+  <ion-row  *ngIf="connected"></ion-row>
+    <ion-col>
+      
+        <ion-item no-lines >
+        <button ion-button large round (click)="tare()">Tare scale</button>
+      </ion-item>
+    </ion-col>
+
+    <ion-col>
+        <ion-item>Weight detected: {{weight | number: '0.1-1'}}</ion-item>
+    </ion-col>
+
+
+
+  </ion-row> -->
+
+</ion-footer>
