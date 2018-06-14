@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
+import { ChangeDetectorRef } from '@angular/core';
 /*
   Generated class for the ScaleDataProvider provider.
 
@@ -25,8 +26,14 @@ export class ScaleDataProvider {
 
   public waitInterval:number=6;
 
+  public demoVariables:any={"cat":false,"urine":false,"scoop":false}
 
-  constructor(private storage: Storage) {
+  resetVars(){
+    this.demoVariables = {"cat":false,"urine":false,"scoop":false};
+  }
+
+  constructor(private storage: Storage
+   ) {
     console.log('Hello ScaleDataProvider Provider');
 
     var that = this;
@@ -60,7 +67,13 @@ export class ScaleDataProvider {
             return weight>that.catWeightThreshold;
           })){
             //console.log("Cat detected!!");
-            that.catDetected=true;
+
+            // Can only be cat if all true or all false
+            if (that.demoVariables.cat==that.demoVariables.urine && that.demoVariables.urine==that.demoVariables.scoop ){
+              that.catDetected=true;
+              that.demoVariables.cat = true;
+            }
+
           }
         }
 
@@ -82,7 +95,12 @@ export class ScaleDataProvider {
         return weight>that.urineWeightThreshold && weight<that.catWeightThreshold;
       })){
         //console.log("Urine detected!!");
-        that.urineDetected=true;
+        // Urine can only change if we observed cat already, and didnt observe scoop yet
+        if (that.demoVariables.cat && !that.demoVariables.scoop ){ 
+          that.urineDetected=true;
+          that.demoVariables.urine = true;
+        }
+       
       }
     }
 
@@ -106,7 +124,21 @@ export class ScaleDataProvider {
         return weight< that.scoopWeightThreshold
        })){
         // console.log("Scoop detected!!");
-         that.scoopDetected=true;
+        // Scoop can only change if we observed urine and cat already:
+        if (that.demoVariables.cat && that.demoVariables.urine){
+          that.scoopDetected=true;
+          that.demoVariables.scoop = true;
+
+          // Reset scoop after a few seconds
+          var that2=that;
+
+          setTimeout(function(){
+            that2.resetVars();
+            that2.scoopDetected=false;
+            //that2.cd.detectChanges();
+          },4000)
+        }
+        
        }
      }
 

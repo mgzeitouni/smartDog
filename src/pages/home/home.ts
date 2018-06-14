@@ -20,8 +20,7 @@ export class HomePage {
  // devices: any[] = [];
   // statusMessage: string;
   device: any = null;
-  blinkSpeed=15;
-  newBlinkSpeed=15;
+
   discovered:boolean=false;
   connected:boolean=false;
   peripheral;
@@ -52,11 +51,13 @@ export class HomePage {
 
   onConnected(peripheral) {
 
-     // this.setStatus('');
+      
      this.connected=true;
       this.peripheral = peripheral;
 
       this.scaleDataProvider.weight_values=[];
+
+      this.scaleDataProvider.resetVars();
 
       var that = this;
 
@@ -87,6 +88,7 @@ export class HomePage {
     this.scaleDataProvider.urineDetected=false;
     this.scaleDataProvider.scoopDetected=false;
 
+    this.scaleDataProvider.resetVars();
 
     this.ble.disconnect(this.peripheral.id).then(
       () => console.log('Disconnected ' + JSON.stringify(this.peripheral)),
@@ -154,28 +156,12 @@ export class HomePage {
     return buf;
   }
 
-  rangeChange(input){
 
-    var sendBLE;
-    if (this.newBlinkSpeed > this.blinkSpeed){
-      sendBLE = 'a';
-    }else if (this.newBlinkSpeed < this.blinkSpeed){
-      sendBLE = 'aa';
-    }
-
-    this.blinkSpeed = this.newBlinkSpeed;
-console.log(sendBLE)
-    var value = this.str2ab(sendBLE)
-    
-    this.ble.write(this.peripheral.id, this.peripheral.services[0],this.peripheral.characteristics[0].characteristic,value).then(
-      result=> {
-      }).catch(error=> {
-          alert(JSON.stringify(error));
-      });
-
-  }
 
   tare(){
+
+    this.scaleDataProvider.resetVars();
+    
     var value = this.str2ab("1")
 
     var serviceToUse = "AFC672E8-6CA4-4252-BE86-B6F20E3F7467";
