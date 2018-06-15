@@ -82,6 +82,22 @@
                 <ion-option value="13">13</ion-option>
               </ion-select>
         </ion-item>
+
+        <ion-item>
+            <ion-label>Seconds after cat detected <br>for urine:</ion-label>
+            <ion-select [(ngModel)]="scaleDataProvider.secondsAfterCat" name="secondsAfterCat">
+                <ion-option value="1">1</ion-option>
+              <ion-option value="2">2</ion-option>
+                <ion-option value="3">3</ion-option>
+                <ion-option value="4">4</ion-option>
+                <ion-option value="5">5</ion-option>
+                <ion-option value="6">6</ion-option>
+                <ion-option value="7">7</ion-option>
+
+              </ion-select>
+        </ion-item>
+
+
         <button ion-button type="submit" block>Update Settings</button>
       </form>
 
